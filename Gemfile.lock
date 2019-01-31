@@ -1,0 +1,23 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    awesome_print (1.8.0)
+    ffi (1.10.0)
+    interactive_editor (0.0.11)
+      spoon (>= 0.0.1)
+    rufus-lru (1.1.0)
+    rufus-verbs (1.0.1)
+      rufus-lru
+    spoon (0.0.6)
+      ffi
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  awesome_print
+  interactive_editor
+  rufus-verbs
+
+BUNDLED WITH
+   1.17.2
