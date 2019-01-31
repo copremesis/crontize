@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'rufus/verbs'
+#require 'rufus-verbs'
 require 'optparse'
 require 'cgi'
 require 'open3'
@@ -37,7 +37,8 @@ module Crontize
 
       #@cronboss_address = 'http://localhost:3000/api'
       #@cronboss_address = 'http://172.31.20.37:3000/api/'
-      @cronboss_address = 'http://172.20.131.190/api/'
+      #@cronboss_address = 'http://172.20.131.190/api/'
+      @cronboss_address = 'http://10.0.2.2:5150'
       @messenger = Messenger.new(:url => @cronboss_address)
       if(opts[:run_as_lib]) 
         @options = opts
@@ -57,17 +58,17 @@ module Crontize
     def started
       puts 'process started'
       puts @cronboss_address 
-      @messenger.send(@params.merge({:status => 'started'}))
+      @messenger.send(@params.merge({:status => 'started', ts: Time.now.to_i}))
     end
 
     def failed(meta = {})
-      @messenger.send(@params.merge({:status => 'failed'}.merge(meta)))
+      @messenger.send(@params.merge({:status => 'failed', ts: Time.now.to_i}.merge(meta)))
     end
 
     def stopped
       puts 'process stopped'
       puts @cronboss_address 
-      @messenger.send(@params.merge({:status=>'stopped'}))
+      @messenger.send(@params.merge({:status=>'stopped', ts: Time.now.to_i}))
     end
 
     #a more robust system call to give us the stack trace info we could use to determine what's breaking in our code
@@ -138,7 +139,7 @@ module Crontize
   end
 
   class Messenger
-    include Rufus::Verbs
+    #include Rufus::Verbs
     def initialize(options = {})
       @url = options[:url] 
     end
@@ -160,11 +161,29 @@ module Crontize
 
         puts [@url, params.toavpair()].join('?')
         r = [@url, params.toavpair()].join('?')
-        #res = get([@url, params.toavpair()].join('?'))
+         #res = get([@url, params.toavpair()].join('?'))
+
+
+        push_to_chat = <<-CLI
+          curl -s -X POST \
+               --url https://chatty.dragonwrench.com \
+               -H 'Content-Type: application/json' \
+               --data '{
+            "agent": "rob@dragonwrench.com",
+            "channel": "the secret city",
+            "message": #{r.inspect}
+          }'
+        CLI
+        system(push_to_chat)
+
         req = Net::HTTP::Get.new(r)
         req.basic_auth('USERNAME', 'PASSWORD')
         res = Net::HTTP.new(uri.host, uri.port).start {|http| http.request(req) }
         puts res
+
+
+
+
       rescue => e
         puts e
       end
