@@ -13,6 +13,7 @@ Crontize is a client-server model that collects & controlls/filters the start an
 The one fact that if it is in a crontab means it's a command line. (incredibly obvious)
 Yet cause we (i) are lazy we can use this as the provided input for this applicaiton ...
 so to use this application effectively you would replace your current crontab entries with something like:
+```
 SHELL=/bin/sh
 
 17 *	* * *	root    cd / && run-parts --report /etc/cron.hourly
@@ -23,7 +24,7 @@ SHELL=/bin/sh
 
 
 25 6	* * *	root /some/path/crontize.rb -c "./yourcommand" -d  "a description"
-
+```
 Now this is where the magic happens ...
 
 
